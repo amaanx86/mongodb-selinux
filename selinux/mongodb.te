@@ -64,6 +64,11 @@ files_pid_filetrans(mongod_t, mongod_runtime_t, { dir file sock_file })
 
 require { type var_t, var_run_t; }
 allow mongod_t var_t:dir { getattr search open };
+
+# FTDC iterates all mount points via statfs(2) for disk statistics collection;
+# allow search on NFS-related dirs to avoid spurious denials
+require { type var_lib_nfs_t; }
+allow mongod_t var_lib_nfs_t:dir search;
 allow mongod_t var_run_t:lnk_file { getattr read };
 allow mongod_t var_run_t:dir { open read getattr lock search ioctl add_name remove_name write };
 type_transition mongod_t var_run_t:dir mongod_runtime_t;
